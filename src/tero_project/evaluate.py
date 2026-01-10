@@ -1,14 +1,11 @@
 import torch
 import typer
-from tero_project.data import corrupt_mnist
-from tero_project.model import MyAwesomeModel
-
-app = typer.Typer()
+from .data import corrupt_mnist
+from .model import MyAwesomeModel
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
 
-@app.command()
 def evaluate(model_checkpoint: str = "models/model.pth") -> None:
     """Evaluate the model on the test set."""
     model = MyAwesomeModel().to(DEVICE)
@@ -30,3 +27,7 @@ def evaluate(model_checkpoint: str = "models/model.pth") -> None:
 
     accuracy = 100 * correct / total
     print(f"Test Accuracy: {accuracy:.2f}%")
+
+
+if __name__ == "__main__":
+    typer.run(evaluate)

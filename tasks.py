@@ -18,6 +18,17 @@ def train(ctx: Context) -> None:
     ctx.run(f"uv run python -m src.{PROJECT_NAME}.train", echo=True, pty=not WINDOWS)
 
 @task
+def eval(ctx: Context, model_checkpoint: str = "models/model.pth") -> None:
+    """Evaluate the model."""
+    ctx.run(f"uv run python -c \"from src.{PROJECT_NAME}.evaluate import evaluate; evaluate('{model_checkpoint}')\"", echo=True, pty=not WINDOWS)
+
+
+@task
+def visualize(ctx: Context, model_checkpoint: str = "models/model.pth", figure_name: str = "embeddings.png") -> None:
+    """Visualize model embeddings."""
+    ctx.run(f"uv run python -c \"from src.{PROJECT_NAME}.visualize import visualize; visualize('{model_checkpoint}', '{figure_name}')\"", echo=True, pty=not WINDOWS)
+
+@task
 def test(ctx: Context) -> None:
     """Run tests."""
     ctx.run("uv run coverage run -m pytest tests/", echo=True, pty=not WINDOWS)
@@ -55,3 +66,6 @@ def git(ctx: Context, message: str) -> None:
     ctx.run("git add .", echo=True, pty=not WINDOWS)
     ctx.run(f'git commit -m "{message}"', echo=True, pty=not WINDOWS)
     ctx.run("git push", echo=True, pty=not WINDOWS)
+
+
+
