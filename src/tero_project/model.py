@@ -28,14 +28,17 @@ class MyAwesomeModel(nn.Module):
 
 if __name__ == "__main__":
     from omegaconf import OmegaConf
-    cfg = OmegaConf.create({
-        "input_channels": 1,
-        "conv1_filters": 32,
-        "conv2_filters": 64,
-        "conv3_filters": 128,
-        "fc_units": 10,
-        "dropout_rate": 0.5
-    })
+
+    cfg = OmegaConf.create(
+        {
+            "input_channels": 1,
+            "conv1_filters": 32,
+            "conv2_filters": 64,
+            "conv3_filters": 128,
+            "fc_units": 10,
+            "dropout_rate": 0.5,
+        }
+    )
     model = MyAwesomeModel(cfg)
     print(f"Model architecture: {model}")
     print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")

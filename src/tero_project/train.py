@@ -7,7 +7,7 @@ from omegaconf import OmegaConf
 from .data import corrupt_mnist
 from .model import MyAwesomeModel
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+logging.basicConfig(format="%(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
@@ -67,4 +67,3 @@ def train(cfg) -> None:
 
 if __name__ == "__main__":
     train()
-
