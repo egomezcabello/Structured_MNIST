@@ -2,7 +2,10 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
     "name": "tero_project",
+    "dockerFile": "Dockerfile",
+    "postCreateCommand": "uv sync --locked"
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    /*
     "image": "mcr.microsoft.com/devcontainers/python:3.10-bullseye",
     "features": {},
 
@@ -22,4 +25,5 @@
             }
         }
     }
+    */
 }
