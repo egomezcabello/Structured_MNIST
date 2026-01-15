@@ -3,6 +3,10 @@
 -e .
 annotated-types==0.7.0
     # via pydantic
+antlr4-python3-runtime==4.9.3
+    # via
+    #   hydra-core
+    #   omegaconf
 anyio==4.12.1
     # via starlette
 babel==2.17.0
@@ -60,6 +64,8 @@ griffe==1.15.0
     # via mkdocstrings-python
 h11==0.16.0
     # via uvicorn
+hydra-core==1.3.2
+    # via tero-project
 identify==2.6.15
     # via pre-commit
 idna==3.11
@@ -69,6 +75,7 @@ idna==3.11
 iniconfig==2.3.0
     # via pytest
 invoke==2.2.0
+    # via tero-project
 jinja2==3.1.6
     # via
     #   mkdocs
@@ -134,8 +141,11 @@ numpy==1.26.4
     #   scikit-learn
     #   scipy
     #   tero-project
+omegaconf==2.3.0
+    # via hydra-core
 packaging==25.0
     # via
+    #   hydra-core
     #   matplotlib
     #   mkdocs
     #   pytest
@@ -177,6 +187,7 @@ pyyaml==6.0.3
     # via
     #   mkdocs
     #   mkdocs-get-deps
+    #   omegaconf
     #   pre-commit
     #   pymdown-extensions
     #   pyyaml-env-tag
