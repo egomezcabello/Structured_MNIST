@@ -1,0 +1,16 @@
+model:
+  input_channels: 1
+  conv1_filters: 32
+  conv2_filters: 64
+  conv3_filters: 128
+  fc_units: 10
+  dropout_rate: 0.5
+training:
+  lr: 0.001
+  batch_size: 32
+  epochs: 10
+  seed: 42
+optimizer:
+  _target_: torch.optim.SGD
+  lr: ${training.lr}
+  momentum: 0.9

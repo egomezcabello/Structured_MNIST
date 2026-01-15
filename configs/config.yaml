@@ -1,0 +1,22 @@
+defaults:
+  - _self_
+  - model: model_conf
+  - training: training_conf
+  - optimizer: sgd_momentum
+
+hydra:
+  run:
+    dir: configs/experiments/${now:%Y-%m-%d_%H-%M-%S}
+  job_logging:
+    formatters:
+      simple:
+        format: '%(message)s'
+    handlers:
+      console:
+        formatter: simple
+      file:
+        class: logging.FileHandler
+        filename: ${hydra:runtime.output_dir}/train.log
+        formatter: simple
+    root:
+      handlers: [console, file]

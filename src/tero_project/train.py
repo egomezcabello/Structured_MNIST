@@ -1,24 +1,41 @@
+import logging
 import matplotlib.pyplot as plt
 import torch
-import typer
+import hydra
+from hydra.utils import instantiate
+from omegaconf import OmegaConf
 from .data import corrupt_mnist
 from .model import MyAwesomeModel
+
+logging.basicConfig(format='%(message)s', level=logging.INFO)
+log = logging.getLogger(__name__)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
 
-def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
+@hydra.main(config_path="../../configs", config_name="config", version_base=None)
+def train(cfg) -> None:
     """Train a model on MNIST."""
-    print("Training day and night")
-    print(f"{lr=}, {batch_size=}, {epochs=}")
+    log.info("Training day and night")
+    log.info(f"Config: {OmegaConf.to_yaml(cfg)}")
 
-    model = MyAwesomeModel().to(DEVICE)
+    # Use config values
+    lr = cfg.training.lr
+    batch_size = cfg.training.batch_size
+    epochs = cfg.training.epochs
+    seed = cfg.training.seed
+
+    torch.manual_seed(seed)
+
+    log.info(f"Using: lr={lr}, batch_size={batch_size}, epochs={epochs}, seed={seed}")
+
+    model = MyAwesomeModel(cfg.model).to(DEVICE)
     train_set, _ = corrupt_mnist()
 
     train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size)
 
     loss_fn = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    optimizer = instantiate(cfg.optimizer, params=model.parameters())
 
     statistics = {"train_loss": [], "train_accuracy": []}
     for epoch in range(epochs):
@@ -36,9 +53,9 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
             statistics["train_accuracy"].append(accuracy)
 
             if i % 100 == 0:
-                print(f"Epoch {epoch}, iter {i}, loss: {loss.item()}")
+                log.info(f"Epoch {epoch}, iter {i}, loss: {loss.item()}")
 
-    print("Training complete")
+    log.info("Training complete")
     torch.save(model.state_dict(), "models/model.pth")
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     axs[0].plot(statistics["train_loss"])
@@ -49,4 +66,5 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
 
 
 if __name__ == "__main__":
-    typer.run(train)
+    train()
+
