@@ -18,7 +18,7 @@ classifiers = [
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "invoke==2.2.0",
+    "invoke==2.2.1",
     "fastapi==0.115.6",
     "gdown>=5.2.0",
     "torch==2.6.0",
