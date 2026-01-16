@@ -1,14 +1,15 @@
-import logging
 import matplotlib.pyplot as plt
+import sys
 import torch
 import hydra
 from hydra.utils import instantiate
+from loguru import logger
 from omegaconf import OmegaConf
 from .data import corrupt_mnist
 from .model import MyAwesomeModel
 
-logging.basicConfig(format="%(message)s", level=logging.INFO)
-log = logging.getLogger(__name__)
+logger.remove()  # Remove default handler
+logger.add(sys.stderr, format="{message}", level="INFO")  # Match original logging format
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
@@ -16,8 +17,12 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.ba
 @hydra.main(config_path="../../configs", config_name="config", version_base=None)
 def train(cfg) -> None:
     """Train a model on MNIST."""
-    log.info("Training day and night")
-    log.info(f"Config: {OmegaConf.to_yaml(cfg)}")
+    # Add file logging to Hydra's output directory
+    import hydra.core.hydra_config
+    logger.add(f"{hydra.core.hydra_config.HydraConfig.get().runtime.output_dir}/train.log", format="{message}", level="INFO")
+    
+    logger.info("Training day and night")
+    logger.info(f"Config: {OmegaConf.to_yaml(cfg)}")
 
     # Use config values
     lr = cfg.training.lr
@@ -27,7 +32,7 @@ def train(cfg) -> None:
 
     torch.manual_seed(seed)
 
-    log.info(f"Using: lr={lr}, batch_size={batch_size}, epochs={epochs}, seed={seed}")
+    logger.info(f"Using: lr={lr}, batch_size={batch_size}, epochs={epochs}, seed={seed}")
 
     model = MyAwesomeModel(cfg.model).to(DEVICE)
     train_set, _ = corrupt_mnist()
@@ -53,9 +58,9 @@ def train(cfg) -> None:
             statistics["train_accuracy"].append(accuracy)
 
             if i % 100 == 0:
-                log.info(f"Epoch {epoch}, iter {i}, loss: {loss.item()}")
+                logger.info(f"Epoch {epoch}, iter {i}, loss: {loss.item()}")
 
-    log.info("Training complete")
+    logger.info("Training complete")
     torch.save(model.state_dict(), "models/model.pth")
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     axs[0].plot(statistics["train_loss"])

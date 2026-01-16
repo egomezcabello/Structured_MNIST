@@ -28,6 +28,7 @@ colorama==0.4.6
     # via
     #   click
     #   griffe
+    #   loguru
     #   mkdocs
     #   mkdocs-material
     #   pytest
@@ -86,6 +87,8 @@ joblib==1.5.3
     # via scikit-learn
 kiwisolver==1.4.9
     # via matplotlib
+loguru==0.7.3
+    # via tero-project
 markdown==3.10
     # via
     #   mkdocs
@@ -257,3 +260,5 @@ virtualenv==20.36.0
     # via pre-commit
 watchdog==6.0.0
     # via mkdocs
+win32-setctime==1.2.0 ; sys_platform == 'win32'
+    # via loguru

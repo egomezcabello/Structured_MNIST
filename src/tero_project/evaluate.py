@@ -1,5 +1,6 @@
 import torch
 import typer
+from omegaconf import OmegaConf
 from .data import corrupt_mnist
 from .model import MyAwesomeModel
 
@@ -8,7 +9,15 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.ba
 
 def evaluate(model_checkpoint: str = "models/model.pth") -> None:
     """Evaluate the model on the test set."""
-    model = MyAwesomeModel().to(DEVICE)
+    cfg = OmegaConf.create({
+        "input_channels": 1,
+        "conv1_filters": 32,
+        "conv2_filters": 64,
+        "conv3_filters": 128,
+        "fc_units": 10,
+        "dropout_rate": 0.5,
+    })
+    model = MyAwesomeModel(cfg).to(DEVICE)
     model.load_state_dict(torch.load(model_checkpoint))
     model.eval()
 
