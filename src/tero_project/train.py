@@ -5,8 +5,11 @@ import hydra
 from hydra.utils import instantiate
 from loguru import logger
 from omegaconf import OmegaConf
+import wandb
 from .data import corrupt_mnist
 from .model import MyAwesomeModel
+from .evaluate import evaluate
+from .visualize import visualize
 
 logger.remove()  # Remove default handler
 logger.add(sys.stderr, format="{message}", level="INFO")  # Match original logging format
@@ -24,6 +27,9 @@ def train(cfg) -> None:
     logger.info("Training day and night")
     logger.info(f"Config: {OmegaConf.to_yaml(cfg)}")
 
+    # Initialize Wandb
+    wandb.init(project="tero_project", config=OmegaConf.to_container(cfg, resolve=True))
+    
     # Use config values
     lr = cfg.training.lr
     batch_size = cfg.training.batch_size
@@ -43,6 +49,7 @@ def train(cfg) -> None:
     optimizer = instantiate(cfg.optimizer, params=model.parameters())
 
     statistics = {"train_loss": [], "train_accuracy": []}
+    step = 0
     for epoch in range(epochs):
         model.train()
         for i, (img, target) in enumerate(train_dataloader):
@@ -57,17 +64,32 @@ def train(cfg) -> None:
             accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
             statistics["train_accuracy"].append(accuracy)
 
+            step += 1
+            wandb.log({"train_loss": loss.item(), "train_accuracy": accuracy}, step=step)
+
             if i % 100 == 0:
                 logger.info(f"Epoch {epoch}, iter {i}, loss: {loss.item()}")
 
     logger.info("Training complete")
     torch.save(model.state_dict(), "models/model.pth")
+    # Log the model as a Wandb artifact
+    artifact = wandb.Artifact('trained_model', type='model')
+    artifact.add_file('models/model.pth')
+    wandb.log_artifact(artifact)
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     axs[0].plot(statistics["train_loss"])
     axs[0].set_title("Train loss")
     axs[1].plot(statistics["train_accuracy"])
     axs[1].set_title("Train accuracy")
     fig.savefig("reports/figures/training_statistics.png")
+    # Log training statistics plot to Wandb
+    wandb.log({"training_statistics": wandb.Image("reports/figures/training_statistics.png")})
+
+    # Run evaluation and visualization
+    evaluate("models/model.pth")
+    visualize("models/model.pth")
+
+    wandb.finish()
 
 
 if __name__ == "__main__":

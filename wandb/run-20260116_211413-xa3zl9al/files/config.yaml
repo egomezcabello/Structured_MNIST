@@ -1,0 +1,61 @@
+_wandb:
+    value:
+        cli_version: 0.24.0
+        e:
+            hrhoqafggn20rmxi1z52o0dwhkcjlyza:
+                cpu_count: 6
+                cpu_count_logical: 12
+                disk:
+                    /:
+                        total: "78594707456"
+                        used: "61793697792"
+                email: egomezcabello@gmail.com
+                executable: /home/tero/S1_dev_env/my_project/github_proj/mlops_project/.venv/bin/python3
+                git:
+                    commit: 6b72e68df05ce16886578f67b2492d81c51db178
+                    remote: https://github.com/egomezcabello/Structured_MNIST.git
+                host: tero-probook
+                memory:
+                    total: "16039518208"
+                os: Linux-6.8.0-90-generic-x86_64-with-glibc2.35
+                program: -m src.tero_project.train
+                python: CPython 3.10.12
+                root: /home/tero/S1_dev_env/my_project/github_proj/mlops_project
+                startedAt: "2026-01-16T20:14:13.304700Z"
+                writerId: hrhoqafggn20rmxi1z52o0dwhkcjlyza
+        m: []
+        python_version: 3.10.12
+        t:
+            "1":
+                - 1
+                - 50
+            "2":
+                - 1
+                - 50
+            "3":
+                - 2
+                - 16
+                - 61
+            "4": 3.10.12
+            "5": 0.24.0
+            "12": 0.24.0
+            "13": linux-x86_64
+model:
+    value:
+        conv1_filters: 32
+        conv2_filters: 64
+        conv3_filters: 128
+        dropout_rate: 0.5
+        fc_units: 10
+        input_channels: 1
+optimizer:
+    value:
+        _target_: torch.optim.SGD
+        lr: 0.001
+        momentum: 0.9
+training:
+    value:
+        batch_size: 32
+        epochs: 5
+        lr: 0.001
+        seed: 42

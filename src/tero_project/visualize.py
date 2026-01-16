@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import torch
 import typer
+from omegaconf import OmegaConf
+import wandb
 from .model import MyAwesomeModel
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
@@ -10,7 +12,15 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.ba
 
 def visualize(model_checkpoint: str, figure_name: str = "embeddings.png") -> None:
     """Visualize model predictions."""
-    model: torch.nn.Module = MyAwesomeModel().to(DEVICE)
+    cfg = OmegaConf.create({
+        "input_channels": 1,
+        "conv1_filters": 32,
+        "conv2_filters": 64,
+        "conv3_filters": 128,
+        "fc_units": 10,
+        "dropout_rate": 0.5,
+    })
+    model: torch.nn.Module = MyAwesomeModel(cfg).to(DEVICE)
     model.load_state_dict(torch.load(model_checkpoint))
     model.eval()
     model.fc = torch.nn.Identity()
@@ -41,6 +51,9 @@ def visualize(model_checkpoint: str, figure_name: str = "embeddings.png") -> Non
         plt.scatter(embeddings[mask, 0], embeddings[mask, 1], label=str(i))
     plt.legend()
     plt.savefig(f"reports/figures/{figure_name}")
+    # Log the embeddings plot to Wandb
+    wandb.log({"embeddings_plot": wandb.Image(f"reports/figures/{figure_name}")})
+    # wandb.finish()  # Moved back to train.py
 
 
 if __name__ == "__main__":
